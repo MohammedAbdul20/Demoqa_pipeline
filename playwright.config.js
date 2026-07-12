@@ -14,77 +14,41 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
- 
+  /* Run tests in files in parallel */
   fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
+  /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  reporter: [ 
-    ['list'],// default console reporter
-    ['html'], 
-    ['allure-playwright']
-  ],
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+    /* Base URL to use in actions like `await page.goto('')`. */
+    // baseURL: 'http://localhost:3000',
 
-    // Opens browser in headed mode
-    // false = browser UI will be visible during execution
-    headless: false,
-
-    // Browser window size / screen resolution
-    viewport: { width: 1920, height: 1080 },
-
-    // Trace collection settings
-    // Keeps Playwright trace only when test fails
-    // Useful for debugging failures
-    trace: 'retain-on-failure',
-
-    // Capture screenshot only if test fails
-    screenshot: 'only-on-failure',
-
-    // Save video recording only for failed tests
-    video: 'retain-on-failure',
+    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    trace: 'on-first-retry',
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: {
-
-        // Browser engine to use
-        // chromium = Chrome/Edge engine
-        browserName: 'chromium',
-
-        // Browser launch configuration
-        launchOptions: {
-
-          // Adds delay (in milliseconds) between actions
-          // Helps visually observe automation steps
-          slowMo: 150,
-
-          // Additional Chromium launch arguments
-          args: [
-
-            // Opens browser in maximized mode
-            '--start-maximized',
-
-            // Explicit browser window size
-            '--window-size=1920,1080'
-          ]
-        }
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
 
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
 
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
 
     /* Test against mobile viewports. */
     // {
